@@ -259,19 +259,19 @@ function App() {
           {!focusMode && (
             <div className="flex bg-zinc-200/50 dark:bg-zinc-800/50 p-1 rounded-xl mb-8 flex-wrap justify-center">
               <button
-                onClick={() => setPickerMode('wheel')}
+                onClick={() => { setPickerMode('wheel'); setIsSpinning(false); }}
                 className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'wheel' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
                 Spin Wheel
               </button>
               <button
-                onClick={() => setPickerMode('scroller')}
+                onClick={() => { setPickerMode('scroller'); setIsSpinning(false); }}
                 className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'scroller' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
                 Digital Raffle
               </button>
               <button
-                onClick={() => setPickerMode('jackpot')}
+                onClick={() => { setPickerMode('jackpot'); setIsSpinning(false); }}
                 className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'jackpot' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
                 Jackpot Board

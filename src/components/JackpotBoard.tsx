@@ -89,6 +89,8 @@ export const JackpotBoard: FC<JackpotBoardProps> = ({
     const durationMs = spinDuration * 1000;
     const startTime = performance.now();
     const lockInterval = durationMs / actualNumWinners; // Time between each slot locking
+    
+    const localLocked = new Set<number>();
 
     const animate = (time: number) => {
       const elapsed = time - startTime;
@@ -98,26 +100,20 @@ export const JackpotBoard: FC<JackpotBoardProps> = ({
         let madeTick = false;
         
         for (let i = 0; i < actualNumWinners; i++) {
-          if (!lockedSlots.includes(i)) {
-            // Slot is still spinning
-            const isLockTime = elapsed > (i + 1) * lockInterval;
-            if (isLockTime) {
-              // Lock it
-              next[i] = chosenWinners[i].entry.text;
-              setLockedSlots(l => {
-                if (!l.includes(i)) {
-                  playTick(soundEnabled, soundTheme);
-                  return [...l, i];
-                }
-                return l;
-              });
-            } else {
-              // Rapidly change text
-              if (Math.random() < 0.3) { // Control speed of flickering
-                const randomEntry = entries[Math.floor(Math.random() * entries.length)];
-                next[i] = randomEntry.text;
-                madeTick = true;
-              }
+          const isLockTime = elapsed > (i + 1) * lockInterval;
+          if (isLockTime) {
+            next[i] = chosenWinners[i].entry.text;
+            if (!localLocked.has(i)) {
+              localLocked.add(i);
+              setLockedSlots(Array.from(localLocked));
+              playTick(soundEnabled, soundTheme);
+            }
+          } else {
+            // Rapidly change text
+            if (Math.random() < 0.3) { // Control speed of flickering
+              const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+              next[i] = randomEntry.text;
+              madeTick = true;
             }
           }
         }
