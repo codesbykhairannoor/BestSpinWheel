@@ -12,6 +12,7 @@ import { Settings } from './components/Settings';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { playWinnerSound } from './utils/audio';
 import type { SoundTheme } from './utils/audio';
+import { SEOHelper } from './components/SEOHelper';
 
 const DEFAULT_ENTRIES = "Ali\nBudi : 2\nCitra\nDewi : 5\nEko\nFajar";
 const COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
@@ -127,9 +128,7 @@ function App() {
     }
   }, [darkMode]);
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'id' : 'en');
-  };
+  // toggleLanguage removed as we use dropdown now
 
   const handleSpinEnd = useCallback((winnersResult: {entry: Entry, index: number}[]) => {
     setWinners(winnersResult.map(w => ({ name: w.entry.text, index: w.index })));
@@ -179,6 +178,7 @@ function App() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-zinc-950 text-zinc-50' : 'bg-zinc-50 text-zinc-900'} relative`}>
+      <SEOHelper />
       {/* Header */}
       {!focusMode && (
         <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
@@ -212,13 +212,26 @@ function App() {
 
             <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-2"></div>
 
-            <button 
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors font-medium text-sm"
-            >
-              <Globe size={16} />
-              <span className="uppercase">{i18n.language.substring(0, 2)}</span>
-            </button>
+            <div className="relative flex items-center">
+              <Globe size={16} className="absolute left-3 text-zinc-500 pointer-events-none" />
+              <select
+                aria-label="Select Language"
+                value={i18n.language?.substring(0, 2) || 'en'}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                className="appearance-none bg-transparent hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors font-medium text-sm pl-9 pr-8 py-2 rounded-lg cursor-pointer outline-none uppercase text-zinc-900 dark:text-zinc-100"
+              >
+                <option value="en">English</option>
+                <option value="id">Bahasa Indonesia</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+                <option value="pt">Português</option>
+                <option value="hi">हिन्दी</option>
+              </select>
+              <div className="absolute right-3 pointer-events-none text-zinc-500 text-xs">▼</div>
+            </div>
             
             <button 
               onClick={() => setDarkMode(!darkMode)}
@@ -394,31 +407,33 @@ function App() {
       </main>
 
       {/* SEO Content Section (Articles & FAQ) */}
-      <article className="bg-zinc-100 dark:bg-zinc-900/80 border-t border-zinc-200 dark:border-zinc-800 py-24 px-6 mt-12">
-        <div className="max-w-[1000px] mx-auto">
+      <article className="bg-zinc-100 dark:bg-zinc-900/80 border-t border-zinc-200 dark:border-zinc-800 py-24 px-6 mt-12 w-full">
+        <div className="max-w-[1200px] mx-auto">
           <header className="mb-16 text-center">
-            <h2 className="text-4xl font-extrabold tracking-tight mb-6 text-zinc-900 dark:text-zinc-50">Spin the Wheel — The Ultimate Random Name Picker</h2>
-            <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-3xl mx-auto">
-              Looking for a <strong>random name picker for classroom</strong> activities, or a <strong>random winner generator for giveaways</strong>? You've found the fastest, ad-free <strong>wheel of names</strong> on the web. Make random decisions instantly with our highly customizable <strong>spinner wheel</strong>.
+            <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 text-zinc-900 dark:text-zinc-50 leading-tight">
+              Spin the Wheel — The Ultimate Random Name Picker
+            </h2>
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-4xl mx-auto">
+              Looking for a reliable <strong>random name picker for classroom</strong> activities, or a secure <strong>random winner generator for giveaways</strong>? You've found the fastest, ad-free <strong>wheel of names</strong> on the web. Make fair and random decisions instantly with our highly customizable <strong>spinner wheel</strong>.
             </p>
           </header>
           
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-12 mb-20">
-            <section>
-              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">Perfect Raffle Name Picker</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">Running a contest on Instagram or YouTube? Use our <strong>giveaway wheel</strong> to securely and fairly <strong>pick a random winner</strong>. Drag and drop your Excel, CSV, or PDF list of participants, and our system will extract the names in milliseconds.</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+            <section className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
+              <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-50">Perfect Raffle Name Picker</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm">Running a contest on Instagram or YouTube? Use our <strong>giveaway wheel</strong> to securely and fairly <strong>pick a random winner</strong>. Drag and drop your Excel, CSV, or PDF list of participants, and our system will extract the names in milliseconds.</p>
             </section>
-            <section>
-              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">100% Free & No Sign-up</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">Unlike other tools, our <strong>random picker wheel</strong> requires zero registration. It's an entirely free, browser-based utility designed to save you time. Zero data leaves your device, guaranteeing absolute privacy for your participant lists.</p>
+            <section className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
+              <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-50">100% Free & No Sign-up</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm">Unlike other tools, our <strong>random picker wheel</strong> requires zero registration. It's an entirely free, browser-based utility designed to save you time. Zero data leaves your device, guaranteeing absolute privacy for your participant lists.</p>
             </section>
-            <section>
-              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">Multiple Game Modes</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">Don't just <strong>spin the wheel</strong>! Try our interactive <strong>Mystery Cards</strong> mode or the highly cinematic <strong>Golden Envelope</strong> reveal to make your classroom presentations or live streams incredibly engaging.</p>
+            <section className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
+              <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-50">Interactive Game Modes</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm">Don't just <strong>spin the wheel</strong>! Try our interactive <strong>Jackpot Board</strong> mode or the <strong>Digital Raffle</strong> reveal to make your classroom presentations or live streams incredibly engaging and suspenseful.</p>
             </section>
-            <section>
-              <h3 className="text-xl font-bold mb-3 text-zinc-900 dark:text-zinc-50">Weighted Choices & Teams</h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">Need a <strong>random team generator</strong> or weighted probabilities? Simply append <code>: 5</code> next to a name to give them a 5x higher chance of winning on the <strong>random wheel</strong>.</p>
+            <section className="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
+              <h3 className="text-xl font-bold mb-4 text-zinc-900 dark:text-zinc-50">Weighted Choices & Teams</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-sm">Need a <strong>random team generator</strong> or weighted probabilities? Simply append <code>: 5</code> next to a name to give them a 5x higher chance of winning on the <strong>random wheel</strong>.</p>
             </section>
           </div>
 
