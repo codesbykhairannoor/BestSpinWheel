@@ -97,16 +97,24 @@ export const Wheel: FC<WheelProps> = ({
       ctx.shadowColor = 'rgba(0,0,0,0.5)';
       ctx.shadowBlur = 4;
       
-      // Calculate font size dynamically based on number of items
-      const fontSize = entries.length <= 10 ? 48 : entries.length <= 25 ? 32 : entries.length <= 50 ? 20 : 14;
+      // Calculate font size dynamically based on slice arc and text length
+      // Max height available at the outer edge is arcSize * radius. We use 0.85 for padding.
+      const maxHeight = arcSize * radius * 0.85;
+      
+      // Max width available is radius - 60
+      const maxWidth = radius - 60;
+      
+      // Rough estimation: each character takes about 0.55 of the font size in width
+      const maxCharWidth = entries[i].text.length > 0 ? maxWidth / (entries[i].text.length * 0.55) : 60;
+      
+      const fontSize = Math.max(12, Math.min(64, Math.min(maxHeight, maxCharWidth)));
       
       ctx.font = `800 ${fontSize}px var(--font-sans, Inter, sans-serif)`;
       
-      const maxChars = entries.length <= 10 ? 25 : entries.length <= 20 ? 18 : 14;
-      const text = entries[i].text.length > maxChars ? entries[i].text.substring(0, maxChars) + '...' : entries[i].text;
+      const text = entries[i].text;
       
-      // Draw text with a safe offset from the edge
-      ctx.fillText(text, radius - 35, 0);
+      // Draw text with a safe offset from the edge and a max width to prevent spilling into the center
+      ctx.fillText(text, radius - 35, 0, maxWidth);
       ctx.restore();
       
       currentAngle += arcSize;

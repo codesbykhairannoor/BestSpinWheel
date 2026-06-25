@@ -29,7 +29,7 @@ export const FastScroller: FC<FastScrollerProps> = ({
 }) => {
   const { t } = useTranslation();
   
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndices, setCurrentIndices] = useState<number[]>([]);
   const [winnerData, setWinnerData] = useState<{entry: Entry, index: number}[] | null>(null);
   const [revealed, setRevealed] = useState(false);
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,6 +56,7 @@ export const FastScroller: FC<FastScrollerProps> = ({
 
     setRevealed(false);
     setWinnerData(null);
+    setCurrentIndices(Array.from({length: Math.min(numWinners, entries.length)}, (_, i) => i % entries.length));
 
     // Determine absolute winner
     let randomVal = getCryptoRandom() * totalWeight;
@@ -85,8 +86,14 @@ export const FastScroller: FC<FastScrollerProps> = ({
       const progress = Math.min(elapsed / durationMs, 1);
       
       if (progress < 1) {
-        // Randomly pick an index to flash
-        setCurrentIndex(Math.floor(Math.random() * entries.length));
+        // Randomly pick N indices to flash
+        const newIndices = [];
+        const pool = Array.from({length: entries.length}, (_, i) => i);
+        for(let i = 0; i < numWinners && pool.length > 0; i++) {
+          const randIdx = Math.floor(Math.random() * pool.length);
+          newIndices.push(pool.splice(randIdx, 1)[0]);
+        }
+        setCurrentIndices(newIndices);
         playTick(soundEnabled, soundTheme);
         
         // Interval slows down as progress reaches 1
@@ -97,7 +104,7 @@ export const FastScroller: FC<FastScrollerProps> = ({
         spinTimeoutRef.current = setTimeout(tick, nextTickMs);
       } else {
         // End
-        setCurrentIndex(winnerIndex);
+        setCurrentIndices(winners.map(w => w.index));
         setWinnerData(winners);
         setRevealed(true);
         playTick(soundEnabled, soundTheme);
@@ -162,11 +169,18 @@ export const FastScroller: FC<FastScrollerProps> = ({
               </span>
             ))
           ) : (
-            <span 
-              className={`font-mono font-black break-words transition-all duration-75 text-center block w-full text-zinc-300 text-4xl md:text-5xl blur-[0.5px] ${isSpinning ? 'text-emerald-200/80 scale-105' : ''}`}
-            >
-              {entries[currentIndex]?.text || '???'}
-            </span>
+            (currentIndices.length > 0 ? currentIndices : [0]).map((idx, i) => (
+              <span 
+                key={i}
+                className={`font-mono font-black break-words transition-all duration-75 text-center block w-full text-zinc-300 blur-[0.5px] ${isSpinning ? 'text-emerald-200/80 scale-105' : ''}`}
+                style={{
+                  fontSize: numWinners === 1 ? '3.75rem' : numWinners <= 3 ? '2.25rem' : '1.5rem',
+                  lineHeight: '1.2'
+                }}
+              >
+                {entries[idx]?.text || '???'}
+              </span>
+            ))
           )}
         </div>
       </div>
