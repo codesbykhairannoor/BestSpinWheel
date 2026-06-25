@@ -1,0 +1,18 @@
+{
+  "title": "Ruleta de Nombres",
+  "tagline": "Selector de Nombres Aleatorio Gratis",
+  "spin": "Girar",
+  "add_names": "Ingrese los nombres aquí, uno por línea...",
+  "shuffle": "Mezclar",
+  "sort": "Ordenar",
+  "clear": "Limpiar",
+  "we_have_a_winner": "¡Tenemos un ganador!",
+  "remove_winner": "Eliminar",
+  "close": "Cerrar",
+  "entries": "Entradas",
+  "results": "Resultados",
+  "dark_mode": "Modo Oscuro",
+  "light_mode": "Modo Claro",
+  "settings": "Ajustes",
+  "fullscreen": "Pantalla Completa"
+}

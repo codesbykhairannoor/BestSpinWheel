@@ -1,0 +1,18 @@
+{
+  "title": "Roleta de Nomes",
+  "tagline": "Sorteador de Nomes Aleatório Grátis",
+  "spin": "Girar",
+  "add_names": "Insira os nomes aqui, um por linha...",
+  "shuffle": "Embaralhar",
+  "sort": "Ordenar",
+  "clear": "Limpar",
+  "we_have_a_winner": "Temos um vencedor!",
+  "remove_winner": "Remover",
+  "close": "Fechar",
+  "entries": "Entradas",
+  "results": "Resultados",
+  "dark_mode": "Modo Escuro",
+  "light_mode": "Modo Claro",
+  "settings": "Configurações",
+  "fullscreen": "Tela Cheia"
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Roue des Noms",
+  "tagline": "Sélecteur de Noms Aléatoire Gratuit",
+  "spin": "Tourner",
+  "add_names": "Entrez les noms ici, un par ligne...",
+  "shuffle": "Mélanger",
+  "sort": "Trier",
+  "clear": "Effacer",
+  "we_have_a_winner": "Nous avons un gagnant!",
+  "remove_winner": "Supprimer",
+  "close": "Fermer",
+  "entries": "Entrées",
+  "results": "Résultats",
+  "dark_mode": "Mode Sombre",
+  "light_mode": "Mode Clair",
+  "settings": "Paramètres",
+  "fullscreen": "Plein Écran"
+}

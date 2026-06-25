@@ -1,0 +1,18 @@
+{
+  "title": "Wheel of Names",
+  "tagline": "Free Online Random Name Picker & Spinner Wheel",
+  "spin": "Spin",
+  "add_names": "Enter names here, one per line...",
+  "shuffle": "Shuffle",
+  "sort": "Sort",
+  "clear": "Clear",
+  "we_have_a_winner": "We have a winner!",
+  "remove_winner": "Remove",
+  "close": "Close",
+  "entries": "Entries",
+  "results": "Results",
+  "dark_mode": "Dark Mode",
+  "light_mode": "Light Mode",
+  "settings": "Settings",
+  "fullscreen": "Fullscreen"
+}

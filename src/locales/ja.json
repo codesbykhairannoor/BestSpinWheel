@@ -1,0 +1,18 @@
+{
+  "title": "名前ルーレット",
+  "tagline": "無料のオンラインランダム名前ピッカー",
+  "spin": "回す",
+  "add_names": "ここに名前を入力してください（1行に1つ）...",
+  "shuffle": "シャッフル",
+  "sort": "並べ替え",
+  "clear": "クリア",
+  "we_have_a_winner": "当選者が出ました！",
+  "remove_winner": "削除",
+  "close": "閉じる",
+  "entries": "エントリー",
+  "results": "結果",
+  "dark_mode": "ダークモード",
+  "light_mode": "ライトモード",
+  "settings": "設定",
+  "fullscreen": "フルスクリーン"
+}

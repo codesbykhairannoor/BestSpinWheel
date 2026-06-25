@@ -1,0 +1,18 @@
+{
+  "title": "名字轮盘",
+  "tagline": "免费的在线随机名字选择器",
+  "spin": "旋转",
+  "add_names": "在这里输入名字，每行一个...",
+  "shuffle": "打乱",
+  "sort": "排序",
+  "clear": "清除",
+  "we_have_a_winner": "我们有赢家了！",
+  "remove_winner": "移除",
+  "close": "关闭",
+  "entries": "条目",
+  "results": "结果",
+  "dark_mode": "深色模式",
+  "light_mode": "浅色模式",
+  "settings": "设置",
+  "fullscreen": "全屏"
+}

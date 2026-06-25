@@ -1,0 +1,18 @@
+{
+  "title": "Glücksrad",
+  "tagline": "Kostenloser Zufallsnamengenerator",
+  "spin": "Drehen",
+  "add_names": "Geben Sie hier Namen ein, einen pro Zeile...",
+  "shuffle": "Mischen",
+  "sort": "Sortieren",
+  "clear": "Löschen",
+  "we_have_a_winner": "Wir haben einen Gewinner!",
+  "remove_winner": "Entfernen",
+  "close": "Schließen",
+  "entries": "Einträge",
+  "results": "Ergebnisse",
+  "dark_mode": "Dunkelmodus",
+  "light_mode": "Heller Modus",
+  "settings": "Einstellungen",
+  "fullscreen": "Vollbild"
+}
