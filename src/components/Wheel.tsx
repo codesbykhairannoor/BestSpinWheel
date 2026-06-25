@@ -109,7 +109,7 @@ export const Wheel: FC<WheelProps> = ({
       
       const fontSize = Math.max(12, Math.min(64, Math.min(maxHeight, maxCharWidth)));
       
-      ctx.font = `800 ${fontSize}px var(--font-sans, Inter, sans-serif)`;
+      ctx.font = `800 ${fontSize}px Inter, system-ui, sans-serif`;
       
       const text = entries[i].text;
       
