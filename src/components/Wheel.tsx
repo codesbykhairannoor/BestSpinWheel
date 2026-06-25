@@ -91,10 +91,7 @@ export const Wheel: FC<WheelProps> = ({ entries, colors, onSpinEnd, isSpinning, 
       ctx.shadowBlur = 4;
       
       // Calculate font size dynamically based on number of items
-      const baseFontSize = entries.length <= 10 ? 48 : entries.length <= 25 ? 28 : entries.length <= 50 ? 18 : 12;
-      
-      // Relax the constraint so it doesn't shrink unnecessarily
-      const fontSize = Math.max(14, Math.min(baseFontSize, (arcSize * radius) * 0.7));
+      const fontSize = entries.length <= 10 ? 48 : entries.length <= 25 ? 32 : entries.length <= 50 ? 20 : 14;
       
       ctx.font = `800 ${fontSize}px var(--font-sans, Inter, sans-serif)`;
       

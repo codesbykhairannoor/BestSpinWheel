@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Wheel } from './components/Wheel';
-import { MysteryCards } from './components/MysteryCards';
+import { FastScroller } from './components/FastScroller';
 import { GoldenEnvelope } from './components/GoldenEnvelope';
 import type { Entry } from './components/Wheel';
 import { EntryList } from './components/EntryList';
@@ -23,7 +23,7 @@ function App() {
   const [soundEnabled, setSoundEnabled] = useLocalStorage<boolean>('wheel-sound', true);
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('wheel-darkmode', false);
   const [spinDuration, setSpinDuration] = useLocalStorage<number>('wheel-duration', 5);
-  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'mystery' | 'envelope'>('wheel-mode', 'wheel');
+  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'envelope'>('wheel-mode', 'wheel');
   
   const [entries, setEntries] = useState<Entry[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -224,10 +224,10 @@ function App() {
                 Spin Wheel
               </button>
               <button
-                onClick={() => setPickerMode('mystery')}
-                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'mystery' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                onClick={() => setPickerMode('scroller')}
+                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'scroller' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
-                Mystery Cards
+                Digital Raffle
               </button>
               <button
                 onClick={() => setPickerMode('envelope')}
@@ -254,8 +254,8 @@ function App() {
                   spinDuration={spinDuration}
                 />
               )}
-              {pickerMode === 'mystery' && (
-                <MysteryCards 
+              {pickerMode === 'scroller' && (
+                <FastScroller 
                   entries={entries} 
                   onSpinEnd={handleSpinEnd}
                   isSpinning={isSpinning}
