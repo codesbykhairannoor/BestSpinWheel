@@ -45,16 +45,16 @@ const parseTxt = async (file: File): Promise<string[]> => {
 const parseCSV = (file: File): Promise<string[]> => {
   return new Promise((resolve, reject) => {
     Papa.parse(file, {
-      complete: (results) => {
+      complete: (results: any) => {
         const names = results.data
           .flat()
           .filter(Boolean)
           .map(String)
-          .map(t => t.trim())
-          .filter(t => t.length > 0);
+          .map((t: string) => t.trim())
+          .filter((t: string) => t.length > 0);
         resolve(names);
       },
-      error: (err) => reject(err)
+      error: (err: Error) => reject(err)
     });
   });
 };

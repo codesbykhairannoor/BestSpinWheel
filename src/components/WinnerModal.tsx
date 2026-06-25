@@ -2,15 +2,15 @@ import { useEffect } from 'react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
-import { X, UserMinus } from 'lucide-react';
+import { X, UserMinus, Trophy } from 'lucide-react';
 
 interface WinnerModalProps {
-  winner: string;
+  winners: string[];
   onClose: () => void;
   onRemoveWinner: () => void;
 }
 
-export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onRemoveWinner }) => {
+export const WinnerModal: FC<WinnerModalProps> = ({ winners, onClose, onRemoveWinner }) => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -38,27 +38,43 @@ export const WinnerModal: FC<WinnerModalProps> = ({ winner, onClose, onRemoveWin
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all animate-in zoom-in-95 duration-300 border border-gray-100 dark:border-gray-700">
-        <div className="flex justify-end">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 max-w-lg w-full mx-4 transform transition-all animate-in zoom-in-95 duration-300 border border-gray-100 dark:border-gray-700 max-h-[90vh] flex flex-col">
+        <div className="flex justify-end shrink-0 mb-2">
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
             <X size={24} />
           </button>
         </div>
         
-        <div className="text-center mt-2 mb-8">
-          <h3 className="text-2xl font-bold text-gray-500 dark:text-gray-400 mb-4">{t('we_have_a_winner')}</h3>
-          <p className="text-5xl font-black text-primary dark:text-primary-dark tracking-tight break-words">
-            {winner}
-          </p>
+        <div className="text-center mb-6 shrink-0">
+          <h3 className="text-2xl font-bold text-gray-500 dark:text-gray-400">{t('we_have_a_winner')}</h3>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1 overflow-y-auto min-h-0 mb-8 custom-scrollbar px-2">
+          <div className="flex flex-col gap-4">
+            {winners.map((w, i) => (
+              <div 
+                key={i} 
+                className="flex items-center gap-4 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-600 animate-in slide-in-from-bottom-4 duration-500"
+                style={{ animationDelay: `${i * 150}ms`, animationFillMode: 'both' }}
+              >
+                <div className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-black text-lg ${i === 0 ? 'bg-yellow-100 text-yellow-600' : i === 1 ? 'bg-gray-200 text-gray-600' : i === 2 ? 'bg-orange-100 text-orange-700' : 'bg-primary/10 text-primary'}`}>
+                  {i === 0 ? <Trophy size={20} /> : `#${i + 1}`}
+                </div>
+                <p className="text-2xl sm:text-3xl font-black text-gray-800 dark:text-gray-100 tracking-tight break-all">
+                  {w}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <button 
             onClick={onRemoveWinner}
             className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 font-semibold transition-colors"
           >
             <UserMinus size={18} />
-            {t('remove_winner')}
+            Remove Winner{winners.length > 1 ? 's' : ''}
           </button>
           <button 
             onClick={onClose}

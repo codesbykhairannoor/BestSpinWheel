@@ -8,17 +8,24 @@ export interface Entry {
   weight: number;
 }
 
+import type { SoundTheme } from '../utils/audio';
+
 interface WheelProps {
   entries: Entry[];
   colors: string[];
-  onSpinEnd: (winner: Entry, winnerIndex: number) => void;
+  onSpinEnd: (winners: {entry: Entry, index: number}[]) => void;
   isSpinning: boolean;
   setIsSpinning: (spinning: boolean) => void;
   soundEnabled: boolean;
   spinDuration: number;
+  numWinners: number;
+  soundTheme: SoundTheme;
 }
 
-export const Wheel: FC<WheelProps> = ({ entries, colors, onSpinEnd, isSpinning, setIsSpinning, soundEnabled, spinDuration }) => {
+export const Wheel: FC<WheelProps> = ({ 
+  entries, colors, onSpinEnd, isSpinning, setIsSpinning, 
+  soundEnabled, spinDuration, numWinners, soundTheme 
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { t } = useTranslation();
   
@@ -202,7 +209,7 @@ export const Wheel: FC<WheelProps> = ({ entries, colors, onSpinEnd, isSpinning, 
         
         if (currentSegment !== lastHoveredSegment.current) {
             if (lastHoveredSegment.current !== -1) {
-                playTick(soundEnabled);
+                playTick(soundEnabled, soundTheme);
             }
             lastHoveredSegment.current = currentSegment;
         }
@@ -212,7 +219,17 @@ export const Wheel: FC<WheelProps> = ({ entries, colors, onSpinEnd, isSpinning, 
           setIsSpinning(false);
           
           let winnerIndex = currentSegment;
-          onSpinEnd(entries[winnerIndex], winnerIndex);
+          const winners = [{ entry: entries[winnerIndex], index: winnerIndex }];
+          
+          // Pick additional random winners if numWinners > 1
+          const availableIndices = Array.from({ length: entries.length }, (_, i) => i).filter(i => i !== winnerIndex);
+          for (let i = 1; i < numWinners && availableIndices.length > 0; i++) {
+            const randIdx = Math.floor(Math.random() * availableIndices.length);
+            const selected = availableIndices.splice(randIdx, 1)[0];
+            winners.push({ entry: entries[selected], index: selected });
+          }
+          
+          onSpinEnd(winners);
           return;
         }
         

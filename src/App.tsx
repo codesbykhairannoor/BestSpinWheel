@@ -11,6 +11,7 @@ import { Results } from './components/Results';
 import { Settings } from './components/Settings';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { playWinnerSound } from './utils/audio';
+import type { SoundTheme } from './utils/audio';
 
 const DEFAULT_ENTRIES = "Ali\nBudi : 2\nCitra\nDewi : 5\nEko\nFajar";
 const COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
@@ -24,10 +25,12 @@ function App() {
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('wheel-darkmode', false);
   const [spinDuration, setSpinDuration] = useLocalStorage<number>('wheel-duration', 5);
   const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'envelope'>('wheel-mode', 'wheel');
+  const [numWinners, setNumWinners] = useLocalStorage<number>('wheel-num-winners', 1);
+  const [soundTheme, setSoundTheme] = useLocalStorage<SoundTheme>('wheel-sound-theme', 'classic');
   
   const [entries, setEntries] = useState<Entry[]>([]);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [winner, setWinner] = useState<{name: string, index: number} | null>(null);
+  const [winners, setWinners] = useState<{name: string, index: number}[]>([]);
   
   const [activeTab, setActiveTab] = useState<'entries' | 'results' | 'settings'>('entries');
   const [focusMode, setFocusMode] = useState(false);
@@ -54,7 +57,7 @@ function App() {
       if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
       if (e.code === 'Space') {
         e.preventDefault();
-        if (!isSpinning && entries.length > 0 && !winner) {
+        if (!isSpinning && entries.length > 0 && winners.length === 0) {
           const wheelContainer = document.querySelector('.cursor-pointer') as HTMLElement;
           if (wheelContainer) wheelContainer.click();
         }
@@ -62,7 +65,7 @@ function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSpinning, entries, winner]);
+  }, [isSpinning, entries, winners]);
 
   // Sync entriesText to entries array with weights
   useEffect(() => {
@@ -92,21 +95,23 @@ function App() {
     i18n.changeLanguage(i18n.language === 'en' ? 'id' : 'en');
   };
 
-  const handleSpinEnd = useCallback((winnerEntry: Entry, winnerIndex: number) => {
-    setWinner({ name: winnerEntry.text, index: winnerIndex });
-    setWinnersList(prev => [winnerEntry.text, ...prev]);
-    playWinnerSound(soundEnabled);
-  }, [soundEnabled, setWinnersList]);
+  const handleSpinEnd = useCallback((winnersResult: {entry: Entry, index: number}[]) => {
+    setWinners(winnersResult.map(w => ({ name: w.entry.text, index: w.index })));
+    setWinnersList(prev => [...winnersResult.map(w => w.entry.text), ...prev]);
+    playWinnerSound(soundEnabled, soundTheme);
+  }, [soundEnabled, soundTheme, setWinnersList]);
 
-  const removeWinner = () => {
-    if (winner) {
+  const removeWinners = () => {
+    if (winners.length > 0) {
       const list = entriesText.split(/[\n,]+/).map(e => e.trim()).filter(Boolean);
-      const indexToRemove = list.findIndex(e => e === winner.name || e.startsWith(winner.name + ' :'));
-      if (indexToRemove !== -1) {
-        list.splice(indexToRemove, 1);
-        setEntriesText(list.join('\n'));
-      }
-      setWinner(null);
+      winners.forEach(winner => {
+        const indexToRemove = list.findIndex(e => e === winner.name || e.startsWith(winner.name + ' :'));
+        if (indexToRemove !== -1) {
+          list.splice(indexToRemove, 1);
+        }
+      });
+      setEntriesText(list.join('\n'));
+      setWinners([]);
     }
   };
 
@@ -252,6 +257,8 @@ function App() {
                   setIsSpinning={setIsSpinning}
                   soundEnabled={soundEnabled}
                   spinDuration={spinDuration}
+                  numWinners={Math.min(numWinners, entries.length)}
+                  soundTheme={soundTheme}
                 />
               )}
               {pickerMode === 'scroller' && (
@@ -262,6 +269,8 @@ function App() {
                   setIsSpinning={setIsSpinning}
                   soundEnabled={soundEnabled}
                   spinDuration={spinDuration}
+                  numWinners={Math.min(numWinners, entries.length)}
+                  soundTheme={soundTheme}
                 />
               )}
               {pickerMode === 'envelope' && (
@@ -272,6 +281,8 @@ function App() {
                   setIsSpinning={setIsSpinning}
                   soundEnabled={soundEnabled}
                   spinDuration={spinDuration}
+                  numWinners={Math.min(numWinners, entries.length)}
+                  soundTheme={soundTheme}
                 />
               )}
             </div>
@@ -335,6 +346,10 @@ function App() {
                   setSoundEnabled={setSoundEnabled}
                   spinDuration={spinDuration}
                   setSpinDuration={setSpinDuration}
+                  numWinners={numWinners}
+                  setNumWinners={setNumWinners}
+                  soundTheme={soundTheme}
+                  setSoundTheme={setSoundTheme}
                 />
               )}
             </div>
@@ -408,11 +423,11 @@ function App() {
       </article>
 
       {/* Winner Modal */}
-      {winner && (
+      {winners.length > 0 && (
         <WinnerModal 
-          winner={winner.name} 
-          onClose={() => setWinner(null)} 
-          onRemoveWinner={removeWinner} 
+          winners={winners.map(w => w.name)} 
+          onClose={() => setWinners([])} 
+          onRemoveWinner={removeWinners} 
         />
       )}
     </div>

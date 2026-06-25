@@ -4,13 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { playTick } from '../utils/audio';
 import type { Entry } from './Wheel';
 
+import type { SoundTheme } from '../utils/audio';
+
 interface GoldenEnvelopeProps {
   entries: Entry[];
-  onSpinEnd: (winner: Entry, winnerIndex: number) => void;
+  onSpinEnd: (winners: {entry: Entry, index: number}[]) => void;
   isSpinning: boolean;
   setIsSpinning: (spinning: boolean) => void;
   soundEnabled: boolean;
   spinDuration: number;
+  numWinners: number;
+  soundTheme: SoundTheme;
 }
 
 type Phase = 'idle' | 'opening' | 'revealed';
@@ -21,12 +25,14 @@ export const GoldenEnvelope: FC<GoldenEnvelopeProps> = ({
   isSpinning, 
   setIsSpinning, 
   soundEnabled, 
-  spinDuration // We use this as the opening delay
+  spinDuration, // We use this as the opening delay
+  numWinners,
+  soundTheme
 }) => {
   const { t } = useTranslation();
   
   const [phase, setPhase] = useState<Phase>('idle');
-  const [winnerData, setWinnerData] = useState<{entry: Entry, index: number} | null>(null);
+  const [winnerData, setWinnerData] = useState<{entry: Entry, index: number}[] | null>(null);
   
   const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
 
@@ -58,21 +64,30 @@ export const GoldenEnvelope: FC<GoldenEnvelopeProps> = ({
         break;
       }
     }
-    setWinnerData({ entry: entries[winnerIndex], index: winnerIndex });
+    const winners = [{ entry: entries[winnerIndex], index: winnerIndex }];
+    
+    const availableIndices = Array.from({ length: entries.length }, (_, i) => i).filter(i => i !== winnerIndex);
+    for (let i = 1; i < numWinners && availableIndices.length > 0; i++) {
+      const randIdx = Math.floor(Math.random() * availableIndices.length);
+      const selected = availableIndices.splice(randIdx, 1)[0];
+      winners.push({ entry: entries[selected], index: selected });
+    }
+    
+    setWinnerData(winners);
 
     // Transition to opening phase immediately
     setPhase('opening');
-    playTick(soundEnabled); // Play an initial sound
+    playTick(soundEnabled, soundTheme); // Play an initial sound
     
     // Wait for the duration of the tension
     setTimeout(() => {
       setPhase('revealed');
-      playTick(soundEnabled);
+      playTick(soundEnabled, soundTheme);
       
       // End the spin shortly after revealing
       setTimeout(() => {
         setIsSpinning(false);
-        onSpinEnd(entries[winnerIndex], winnerIndex);
+        onSpinEnd(winners);
         setTimeout(() => setPhase('idle'), 500); // reset
       }, 1500);
       
@@ -114,10 +129,18 @@ export const GoldenEnvelope: FC<GoldenEnvelopeProps> = ({
           }}
         >
           <div className="w-full h-full border-4 border-double border-zinc-300 flex flex-col items-center justify-center p-2">
-            <span className="text-xs uppercase tracking-widest text-zinc-400 mb-2 font-serif">Winner</span>
-            <span className="font-serif italic font-black text-3xl text-zinc-900 leading-tight">
-              {phase !== 'idle' && winnerData ? winnerData.entry.text : '???'}
-            </span>
+            <span className="text-xs uppercase tracking-widest text-zinc-400 mb-2 font-serif">Winner{winnerData && winnerData.length > 1 ? 's' : ''}</span>
+            <div className="flex flex-col gap-1 overflow-hidden h-[130px] justify-center w-full">
+              {phase !== 'idle' && winnerData ? (
+                winnerData.map((w, i) => (
+                  <span key={i} className="font-serif italic font-black text-zinc-900 leading-tight truncate px-2" style={{ fontSize: numWinners === 1 ? '1.875rem' : numWinners <= 3 ? '1.25rem' : '1rem' }}>
+                    {w.entry.text}
+                  </span>
+                ))
+              ) : (
+                <span className="font-serif italic font-black text-3xl text-zinc-900 leading-tight">???</span>
+              )}
+            </div>
           </div>
         </div>
 

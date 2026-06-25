@@ -4,13 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { playTick } from '../utils/audio';
 import type { Entry } from './Wheel';
 
+import type { SoundTheme } from '../utils/audio';
+
 interface FastScrollerProps {
   entries: Entry[];
-  onSpinEnd: (winner: Entry, winnerIndex: number) => void;
+  onSpinEnd: (winners: {entry: Entry, index: number}[]) => void;
   isSpinning: boolean;
   setIsSpinning: (spinning: boolean) => void;
   soundEnabled: boolean;
   spinDuration: number;
+  numWinners: number;
+  soundTheme: SoundTheme;
 }
 
 export const FastScroller: FC<FastScrollerProps> = ({ 
@@ -19,12 +23,14 @@ export const FastScroller: FC<FastScrollerProps> = ({
   isSpinning, 
   setIsSpinning, 
   soundEnabled, 
-  spinDuration 
+  spinDuration,
+  numWinners,
+  soundTheme
 }) => {
   const { t } = useTranslation();
   
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [winnerData, setWinnerData] = useState<{entry: Entry, index: number} | null>(null);
+  const [winnerData, setWinnerData] = useState<{entry: Entry, index: number}[] | null>(null);
   const [revealed, setRevealed] = useState(false);
   const spinTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -61,6 +67,14 @@ export const FastScroller: FC<FastScrollerProps> = ({
         break;
       }
     }
+    const winners = [{ entry: entries[winnerIndex], index: winnerIndex }];
+    
+    const availableIndices = Array.from({ length: entries.length }, (_, i) => i).filter(i => i !== winnerIndex);
+    for (let i = 1; i < numWinners && availableIndices.length > 0; i++) {
+      const randIdx = Math.floor(Math.random() * availableIndices.length);
+      const selected = availableIndices.splice(randIdx, 1)[0];
+      winners.push({ entry: entries[selected], index: selected });
+    }
 
     const durationMs = spinDuration * 1000;
     const startTime = performance.now();
@@ -73,7 +87,7 @@ export const FastScroller: FC<FastScrollerProps> = ({
       if (progress < 1) {
         // Randomly pick an index to flash
         setCurrentIndex(Math.floor(Math.random() * entries.length));
-        playTick(soundEnabled);
+        playTick(soundEnabled, soundTheme);
         
         // Interval slows down as progress reaches 1
         // Ease-out cubic formula
@@ -84,13 +98,13 @@ export const FastScroller: FC<FastScrollerProps> = ({
       } else {
         // End
         setCurrentIndex(winnerIndex);
-        setWinnerData({ entry: entries[winnerIndex], index: winnerIndex });
+        setWinnerData(winners);
         setRevealed(true);
-        playTick(soundEnabled);
+        playTick(soundEnabled, soundTheme);
         
         setTimeout(() => {
           setIsSpinning(false);
-          onSpinEnd(entries[winnerIndex], winnerIndex);
+          onSpinEnd(winners);
         }, 1500);
       }
     };
@@ -133,15 +147,27 @@ export const FastScroller: FC<FastScrollerProps> = ({
         {/* Glow */}
         <div className="absolute inset-0 bg-emerald-500/5 mix-blend-screen pointer-events-none"></div>
 
-        <div className="relative z-20 text-center px-4 w-full">
-          <span 
-            className={`font-mono font-black break-words transition-all duration-75 text-center block w-full
-              ${revealed ? 'text-emerald-400 text-5xl md:text-6xl drop-shadow-[0_0_15px_rgba(16,185,129,0.8)] scale-110' : 'text-zinc-300 text-4xl md:text-5xl blur-[0.5px]'}
-              ${isSpinning && !revealed ? 'text-emerald-200/80 scale-105' : ''}
-            `}
-          >
-            {winnerData ? winnerData.entry.text : entries[currentIndex]?.text || '???'}
-          </span>
+        <div className="relative z-20 text-center px-4 w-full h-full flex flex-col justify-center gap-2 overflow-hidden py-4">
+          {winnerData ? (
+            winnerData.map((w, i) => (
+              <span 
+                key={i}
+                className="font-mono font-black break-words transition-all duration-300 text-center block w-full text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)] scale-110 animate-in zoom-in"
+                style={{
+                  fontSize: numWinners === 1 ? '3.75rem' : numWinners <= 3 ? '2.25rem' : '1.5rem',
+                  lineHeight: '1.2'
+                }}
+              >
+                {w.entry.text}
+              </span>
+            ))
+          ) : (
+            <span 
+              className={`font-mono font-black break-words transition-all duration-75 text-center block w-full text-zinc-300 text-4xl md:text-5xl blur-[0.5px] ${isSpinning ? 'text-emerald-200/80 scale-105' : ''}`}
+            >
+              {entries[currentIndex]?.text || '???'}
+            </span>
+          )}
         </div>
       </div>
       

@@ -1,15 +1,25 @@
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Volume2, VolumeX, Monitor } from 'lucide-react';
+import type { SoundTheme } from '../utils/audio';
 
 interface SettingsProps {
   soundEnabled: boolean;
   setSoundEnabled: (v: boolean) => void;
   spinDuration: number;
   setSpinDuration: (v: number) => void;
+  numWinners: number;
+  setNumWinners: (v: number) => void;
+  soundTheme: SoundTheme;
+  setSoundTheme: (v: SoundTheme) => void;
 }
 
-export const Settings: FC<SettingsProps> = ({ soundEnabled, setSoundEnabled, spinDuration, setSpinDuration }) => {
+export const Settings: FC<SettingsProps> = ({ 
+  soundEnabled, setSoundEnabled, 
+  spinDuration, setSpinDuration,
+  numWinners, setNumWinners,
+  soundTheme, setSoundTheme
+}) => {
   const { t } = useTranslation();
 
   const toggleFullscreen = () => {
@@ -31,6 +41,25 @@ export const Settings: FC<SettingsProps> = ({ soundEnabled, setSoundEnabled, spi
       </div>
       
       <div className="flex-1 p-6 space-y-8 overflow-y-auto">
+        
+        {/* Number of Winners */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-gray-800 dark:text-gray-200">Number of Winners</h3>
+            <span className="text-primary font-bold">{numWinners}</span>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">How many names to pick at once.</p>
+          <input 
+            type="range" 
+            min="1" max="5" 
+            value={numWinners}
+            onChange={(e) => setNumWinners(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-primary"
+          />
+        </div>
+
+        <div className="h-px bg-gray-100 dark:bg-gray-700 w-full"></div>
+
         {/* Spin Duration */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -48,19 +77,47 @@ export const Settings: FC<SettingsProps> = ({ soundEnabled, setSoundEnabled, spi
         </div>
 
         <div className="h-px bg-gray-100 dark:bg-gray-700 w-full"></div>
+
         {/* Sound Toggle */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-bold text-gray-800 dark:text-gray-200">Sound Effects</h3>
-            <p className="text-sm text-gray-500">Play sounds while spinning</p>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-gray-800 dark:text-gray-200">Sound Effects</h3>
+              <p className="text-sm text-gray-500">Play sounds while spinning</p>
+            </div>
+            <button 
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className={`p-3 rounded-full transition-colors ${soundEnabled ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400 dark:bg-gray-700'}`}
+            >
+              {soundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
+            </button>
           </div>
-          <button 
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-3 rounded-full transition-colors ${soundEnabled ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400 dark:bg-gray-700'}`}
-          >
-            {soundEnabled ? <Volume2 size={24} /> : <VolumeX size={24} />}
-          </button>
+
+          {soundEnabled && (
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setSoundTheme('classic')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${soundTheme === 'classic' ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}
+              >
+                Classic
+              </button>
+              <button 
+                onClick={() => setSoundTheme('arcade')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${soundTheme === 'arcade' ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}
+              >
+                Arcade
+              </button>
+              <button 
+                onClick={() => setSoundTheme('casino')}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${soundTheme === 'casino' ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}
+              >
+                Casino
+              </button>
+            </div>
+          )}
         </div>
+
+        <div className="h-px bg-gray-100 dark:bg-gray-700 w-full"></div>
 
         {/* Fullscreen Toggle */}
         <div className="flex items-center justify-between">
