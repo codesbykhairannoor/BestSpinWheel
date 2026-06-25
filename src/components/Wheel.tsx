@@ -97,17 +97,10 @@ export const Wheel: FC<WheelProps> = ({
       ctx.shadowColor = 'rgba(0,0,0,0.5)';
       ctx.shadowBlur = 4;
       
-      // Calculate font size dynamically based on slice arc and text length
-      // Max height available at the outer edge is arcSize * radius. We use 0.85 for padding.
-      const maxHeight = arcSize * radius * 0.85;
-      
-      // Max width available is radius - 60
-      const maxWidth = radius - 60;
-      
-      // Rough estimation: each character takes about 0.55 of the font size in width
-      const maxCharWidth = entries[i].text.length > 0 ? maxWidth / (entries[i].text.length * 0.55) : 60;
-      
-      const fontSize = Math.max(12, Math.min(64, Math.min(maxHeight, maxCharWidth)));
+      // Calculate font size dynamically based on slice angle and distance to center
+      const maxFontSizeByAngle = arcSize * (radius * 0.4); 
+      const fontSize = Math.max(12, Math.min(52, maxFontSizeByAngle));
+      const maxWidth = radius - 60; // Leave space near the center
       
       ctx.font = `800 ${fontSize}px Inter, system-ui, sans-serif`;
       
@@ -171,20 +164,16 @@ export const Wheel: FC<WheelProps> = ({
     
     setIsSpinning(true);
     
-    // True randomness using Crypto API
-    // We want the wheel to spin for approximately `spinDuration` seconds.
-    // Physics: v = u - at. Time to stop t = u/a.
-    // If we fix t = spinDuration * 1000 (ms), we need to choose u and a such that t is met.
-    // Instead of precise time, we'll pick an initial velocity and a deceleration factor.
-    
+    // Exponential decay (friction) for a realistic, dramatic slowdown
     const randomFactor = getCryptoRandom();
-    const baseVelocity = 0.4 + (randomFactor * 0.2); // 0.4 to 0.6 rad/frame
+    const baseVelocity = 0.5 + (randomFactor * 0.3); // High initial speed
     spinVelocity.current = baseVelocity;
     
-    // Deceleration = u / (time_in_frames)
-    // Time in frames approx = spinDuration * 60 (assuming 60fps)
+    // We want the wheel to stop (velocity < 0.001) at exactly spinDuration.
+    // v_final = v_initial * friction ^ frames
+    // 0.001 = baseVelocity * friction ^ targetFrames
     const targetFrames = spinDuration * 60;
-    const deceleration = baseVelocity / targetFrames;
+    const friction = Math.pow(0.0005 / baseVelocity, 1 / targetFrames);
     
     let lastTime = performance.now();
     lastHoveredSegment.current = -1;
@@ -199,7 +188,7 @@ export const Wheel: FC<WheelProps> = ({
         rotation.current += spinVelocity.current * frameDelta;
         rotation.current %= 2 * Math.PI;
         
-        spinVelocity.current -= deceleration * frameDelta;
+        spinVelocity.current *= Math.pow(friction, frameDelta);
         
         // Find which segment is currently at the pointer (0 radians relative to canvas)
         let normalizedRotation = (2 * Math.PI - (rotation.current % (2 * Math.PI))) % (2 * Math.PI);
@@ -222,7 +211,7 @@ export const Wheel: FC<WheelProps> = ({
             lastHoveredSegment.current = currentSegment;
         }
 
-        if (spinVelocity.current <= 0) {
+        if (spinVelocity.current <= 0.0005) {
           spinVelocity.current = 0;
           setIsSpinning(false);
           

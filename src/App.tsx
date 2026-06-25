@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Wheel } from './components/Wheel';
 import { FastScroller } from './components/FastScroller';
-import { GoldenEnvelope } from './components/GoldenEnvelope';
+import { CardReveal } from './components/CardReveal';
 import type { Entry } from './components/Wheel';
 import { EntryList } from './components/EntryList';
 import { WinnerModal } from './components/WinnerModal';
@@ -24,7 +24,7 @@ function App() {
   const [soundEnabled, setSoundEnabled] = useLocalStorage<boolean>('wheel-sound', true);
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('wheel-darkmode', false);
   const [spinDuration, setSpinDuration] = useLocalStorage<number>('wheel-duration', 5);
-  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'envelope'>('wheel-mode', 'wheel');
+  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'cards'>('wheel-mode', 'wheel');
   const [numWinners, setNumWinners] = useLocalStorage<number>('wheel-num-winners', 1);
   const [soundTheme, setSoundTheme] = useLocalStorage<SoundTheme>('wheel-sound-theme', 'classic');
   
@@ -49,6 +49,42 @@ function App() {
         console.error("Failed to parse URL params", e);
       }
     }
+  }, []);
+
+  // Inject JSON-LD Schema for SEO
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Is this random name picker truly fair?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Our wheel of names uses advanced cryptographic algorithms combined with physics-based simulation to ensure every spin is 100% fair, unbiased, and unpredictable."
+        }
+      }, {
+        "@type": "Question",
+        "name": "How many names can I add to the wheel?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can add up to 10,000 names! Because our random choice generator runs completely offline in your browser, it can handle massive lists for massive giveaways without crashing."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Can I import names from an Excel or PDF file?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. Simply click the Entries tab and drag any PDF, Word, Excel, or CSV file into the text box. Our system will automatically parse the data."
+        }
+      }]
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
   }, []);
 
   // Keyboard shortcut (Space to spin)
@@ -235,10 +271,10 @@ function App() {
                 Digital Raffle
               </button>
               <button
-                onClick={() => setPickerMode('envelope')}
-                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'envelope' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                onClick={() => setPickerMode('cards')}
+                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'cards' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
-                Golden Envelope
+                Card Flip Reveal
               </button>
             </div>
           )}
@@ -273,8 +309,8 @@ function App() {
                   soundTheme={soundTheme}
                 />
               )}
-              {pickerMode === 'envelope' && (
-                <GoldenEnvelope 
+              {pickerMode === 'cards' && (
+                <CardReveal 
                   entries={entries} 
                   onSpinEnd={handleSpinEnd}
                   isSpinning={isSpinning}
