@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Wheel } from './components/Wheel';
 import { FastScroller } from './components/FastScroller';
-import { CardReveal } from './components/CardReveal';
+import { JackpotBoard } from './components/JackpotBoard';
 import type { Entry } from './components/Wheel';
 import { EntryList } from './components/EntryList';
 import { WinnerModal } from './components/WinnerModal';
@@ -24,7 +24,7 @@ function App() {
   const [soundEnabled, setSoundEnabled] = useLocalStorage<boolean>('wheel-sound', true);
   const [darkMode, setDarkMode] = useLocalStorage<boolean>('wheel-darkmode', false);
   const [spinDuration, setSpinDuration] = useLocalStorage<number>('wheel-duration', 5);
-  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'cards'>('wheel-mode', 'wheel');
+  const [pickerMode, setPickerMode] = useLocalStorage<'wheel' | 'scroller' | 'jackpot'>('wheel-mode', 'wheel');
   const [numWinners, setNumWinners] = useLocalStorage<number>('wheel-num-winners', 1);
   const [soundTheme, setSoundTheme] = useLocalStorage<SoundTheme>('wheel-sound-theme', 'classic');
   
@@ -271,10 +271,10 @@ function App() {
                 Digital Raffle
               </button>
               <button
-                onClick={() => setPickerMode('cards')}
-                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'cards' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
+                onClick={() => setPickerMode('jackpot')}
+                className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${pickerMode === 'jackpot' ? 'bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'}`}
               >
-                Card Flip Reveal
+                Jackpot Board
               </button>
             </div>
           )}
@@ -309,8 +309,8 @@ function App() {
                   soundTheme={soundTheme}
                 />
               )}
-              {pickerMode === 'cards' && (
-                <CardReveal 
+              {pickerMode === 'jackpot' && (
+                <JackpotBoard 
                   entries={entries} 
                   onSpinEnd={handleSpinEnd}
                   isSpinning={isSpinning}

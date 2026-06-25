@@ -178,7 +178,7 @@ export const FastScroller: FC<FastScrollerProps> = ({
                   lineHeight: '1.2'
                 }}
               >
-                {entries[idx]?.text || '???'}
+                {isSpinning ? (entries[idx]?.text || '???') : 'READY...'}
               </span>
             ))
           )}
