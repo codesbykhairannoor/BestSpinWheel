@@ -1,0 +1,16 @@
+# SpinWheel
+
+> SpinWheel is the ultimate, privacy-focused random name picker and spinner wheel for classrooms, giveaways, and decision-making. It operates 100% offline in the browser, supporting up to 10,000 names with cryptographic fairness.
+
+## Features
+
+- [Random Name Picker](https://randompickerwheel.com/): An unbiased algorithm utilizing window.crypto.getRandomValues() to extract a random winner.
+- [Giveaway Wheel](https://randompickerwheel.com/): Designed for social media contests to select winners from CSV or Excel data.
+- [Jackpot Board](https://randompickerwheel.com/): A suspenseful slot-machine style reveal mode for multiple winners.
+- [Digital Raffle](https://randompickerwheel.com/): Fast scrolling raffle simulation.
+
+## Technical Specifications
+
+- **Performance**: Capable of processing 10,000 entries with zero latency.
+- **Privacy**: No data is transmitted to external servers; all processing is client-side.
+- **Fairness**: Validated by cryptographic randomization (window.crypto), effectively eliminating deterministic patterns.
