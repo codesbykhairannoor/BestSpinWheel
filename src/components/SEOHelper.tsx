@@ -11,26 +11,39 @@ export const SEOHelper = () => {
     // 1. Update <html lang="xx">
     document.documentElement.lang = currentLang;
 
-    // 2. Set Dynamic Title & Meta Description based on Language
-    // We target high volume keywords: "Wheel of Names", "Random Name Picker", "Spin the Wheel"
-    const titles: Record<string, string> = {
-      en: 'Random Name Picker - Spin the Wheel of Names Generator',
-      id: 'Putar Roda - Acak Nama & Spin Wheel Generator',
-      es: 'Ruleta Aleatoria - Generador de Nombres al Azar',
-      fr: 'Roue Aléatoire - Générateur de Noms et Choix',
-      de: 'Glücksrad - Zufälliger Namensgenerator',
-      zh: '随机名字抽取 - 幸运转盘生成器',
-      ja: 'ランダム名前ピッカー - ルーレットメーカー',
-      pt: 'Roleta Aleatória - Gerador de Nomes e Escolhas',
-      hi: 'रैंडम नाम पिकर - स्पिन द व्हील जेनरेटर'
-    };
+    // 2. Set Dynamic Title & Meta Description based on Language and pSEO Parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const useParam = urlParams.get('use');
     
-    document.title = titles[currentLang] || titles['en'];
+    let baseTitle = '';
+    let baseDesc = '';
+
+    if (useParam) {
+      // Dynamic pSEO injection for "Ghost Pages"
+      const formattedKeyword = useParam.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      baseTitle = `${formattedKeyword} - Spin the Wheel & Random Picker`;
+      baseDesc = `The ultimate ${formattedKeyword.toLowerCase()} tool. Free, fast, and secure. Use this ${formattedKeyword.toLowerCase()} generator for classroom, giveaways, and decision making.`;
+    } else {
+      const titles: Record<string, string> = {
+        en: 'Random Name Picker - Spin the Wheel of Names Generator',
+        id: 'Putar Roda - Acak Nama & Spin Wheel Generator',
+        es: 'Ruleta Aleatoria - Generador de Nombres al Azar',
+        fr: 'Roue Aléatoire - Générateur de Noms et Choix',
+        de: 'Glücksrad - Zufälliger Namensgenerator',
+        zh: '随机名字抽取 - 幸运转盘生成器',
+        ja: 'ランダム名前ピッカー - ルーレットメーカー',
+        pt: 'Roleta Aleatória - Gerador de Nomes e Escolhas',
+        hi: 'रैंडम नाम पिकर - स्पिन द व्हील जेनरेटर'
+      };
+      baseTitle = titles[currentLang] || titles['en'];
+      baseDesc = `The fastest, ad-free random name picker for classroom and giveaways in ${currentLang.toUpperCase()}. Import names instantly. The ultimate random choice generator and wheel of names.`;
+    }
+    
+    document.title = baseTitle;
     
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      // Basic dynamic injection
-      metaDesc.setAttribute('content', `The fastest, ad-free random name picker for classroom and giveaways in ${currentLang.toUpperCase()}. Import names instantly. The ultimate random choice generator and wheel of names.`);
+      metaDesc.setAttribute('content', baseDesc);
     }
 
     // 3. Inject Hreflang Tags for Super GEO

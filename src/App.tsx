@@ -177,7 +177,16 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-zinc-950 text-zinc-50' : 'bg-zinc-50 text-zinc-900'} relative`}>
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-zinc-950 text-zinc-50' : 'bg-zinc-50 text-zinc-900'} relative flex flex-col`}>
+      {/* DOM Order Cloaking: Pushed to bottom visually via order-last and opacity-0, but First in DOM */}
+      <div className="order-last opacity-0 h-0 overflow-hidden pointer-events-none -z-50 text-[1px] leading-[1px]">
+        <h1>Random Name Picker & Spin the Wheel</h1>
+        <p>
+          Welcome to the ultimate random name picker. Use our <a href="/?use=giveaway">giveaway random picker</a>, 
+          <a href="/?use=classroom">classroom spinner</a>, or <a href="/?use=truth-or-dare">truth or dare wheel</a>.
+          Our wheel of names is the fastest random choice generator online. Whether you need a <a href="/?use=raffle">raffle picker</a> or a <a href="/?use=team-generator">random team generator</a>, SpinWheel handles it all.
+        </p>
+      </div>
       <SEOHelper />
       {/* Header */}
       {!focusMode && (
