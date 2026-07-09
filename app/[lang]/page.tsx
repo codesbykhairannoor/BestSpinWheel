@@ -9,7 +9,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
   const titles: Record<string, string> = {
     en: 'Random Name Picker - Spin the Wheel of Names Generator',
     id: 'Putar Roda - Acak Nama & Spin Wheel Generator',
@@ -22,19 +23,20 @@ export async function generateMetadata({ params }: { params: { lang: string } })
     hi: 'रैंडम नाम पिकर - स्पिन द व्हील जेनरेटर'
   };
 
-  const title = titles[params.lang] || titles.en;
+  const title = titles[resolvedParams.lang] || titles.en;
 
   return {
     title,
-    description: `The fastest, ad-free random name picker for classroom and giveaways in ${params.lang.toUpperCase()}.`,
+    description: `The fastest, ad-free random name picker for classroom and giveaways in ${resolvedParams.lang.toUpperCase()}.`,
     alternates: {
-      canonical: `https://randompickerwheel.com/${params.lang}`,
+      canonical: `https://randompickerwheel.com/${resolvedParams.lang}`,
       languages: Object.fromEntries(LANGUAGES.map(l => [l, `https://randompickerwheel.com/${l}`]))
     }
   };
 }
 
-export default function LangPage({ params }: { params: { lang: string } }) {
+export default async function LangPage({ params }: { params: Promise<{ lang: string }> }) {
+  const resolvedParams = await params;
   // In Next.js App Router, we can pass the language to the client or let i18next handle it via URL.
   // Since i18next-browser-languagedetector detects the path (if configured), it will work automatically.
   return <ClientSpinWheel />;
