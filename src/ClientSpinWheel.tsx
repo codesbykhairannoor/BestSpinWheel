@@ -1,4 +1,6 @@
+"use client";
 import { useState, useEffect, useCallback } from 'react';
+import './i18n';
 import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import { Wheel } from './components/Wheel';
@@ -8,11 +10,11 @@ import type { Entry } from './components/Wheel';
 import { EntryList } from './components/EntryList';
 import { WinnerModal } from './components/WinnerModal';
 import { Results } from './components/Results';
+import { ResultDetails } from './components/ResultDetails';
 import { Settings } from './components/Settings';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { playWinnerSound } from './utils/audio';
 import type { SoundTheme } from './utils/audio';
-import { SEOHelper } from './components/SEOHelper';
 
 const DEFAULT_ENTRIES = "Ali\nBudi : 2\nCitra\nDewi : 5\nEko\nFajar";
 const COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e'];
@@ -187,7 +189,6 @@ function App() {
           Our wheel of names is the fastest random choice generator online. Whether you need a <a href="/?use=raffle">raffle picker</a> or a <a href="/?use=team-generator">random team generator</a>, SpinWheel handles it all.
         </p>
       </div>
-      <SEOHelper />
       {/* Header */}
       {!focusMode && (
         <header className="flex items-center justify-between px-8 py-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
